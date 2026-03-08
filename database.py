@@ -60,8 +60,8 @@ class Appointment(Base):
     severity_score = Column(Integer)
     model_confidence = Column(String)
 
-    symptom_level = Column(String)   # Mild / Moderate / Severe
-    duration = Column(String)        # <1 day / 1-3 days / >3 days
+    symptom_level = Column(String)   
+    duration = Column(String)        
 
     appointment_date = Column(String)
     time_slot = Column(String)
@@ -70,7 +70,18 @@ class Appointment(Base):
     status = Column(String, default="Pending")  # Pending / Confirmed / Emergency
 
     created_at = Column(DateTime, default=datetime.utcnow)
+    
 
+def get_user_by_id(user_id):
+    session = SessionLocal()
+    user = session.query(User).filter(User.id == user_id).first()
+    session.close()
+    return user
 
+def get_doctor_by_id(doctor_id):
+    session = SessionLocal()
+    doctor = session.query(Doctor).filter(Doctor.id == doctor_id).first()
+    session.close()
+    return doctor
 def init_db():
     Base.metadata.create_all(bind=engine)

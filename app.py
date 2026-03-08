@@ -11,6 +11,8 @@ from auth import create_user, authenticate_user
 from report_storage import get_user_reports
 from agent_router import classify_intent
 from emergency_agent import build_emergency_response
+from appointment.patient_pipeline import process_patient_submission
+from appointment.book_appointment import confirm_booking
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -191,6 +193,8 @@ def load_reports(user_id):
 
 
 init_db()
+from appointment.seed_doctors import seed_doctors
+seed_doctors()
 # ===============================
 # GRADIO UI
 # ===============================
@@ -242,7 +246,45 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
 
             load_reports_btn = gr.Button("Load My Reports")
             reports_list = gr.Files(label="Your Previous Reports")
-    
+            
+        with gr.Tab("🏥 Appointment"):
+
+            gr.Markdown("## AI Assisted Medical Appointment")
+
+            problem_type = gr.Dropdown(
+                ["Kidney", "Brain", "Fracture", "Pneumonia", "General"],
+                label="Select Medical Problem"
+            )
+
+            appointment_voice_input = gr.Audio(
+                sources=["microphone", "upload"],
+                type="filepath",
+                label="Describe your problem (Voice)"
+            )
+
+            appointment_image_input = gr.Image(
+                type="filepath",
+                label="Upload Medical Image"
+            )
+
+            submit_initial = gr.Button("Submit Initial")
+
+            prediction_output = gr.Markdown()
+            report_output = gr.Markdown()
+
+            pdf_output = gr.File(label="Download Medical Report")
+
+            slot_dropdown = gr.Dropdown(
+                choices=[],
+                label="Available Appointment Slots",
+                interactive=True
+            )
+
+            doctor_id_state = gr.State()
+
+            book_btn = gr.Button("Confirm Appointment")
+
+            booking_status = gr.Markdown()
     
 
 
@@ -284,7 +326,23 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
     fn=load_reports,
     inputs=[user_state],
     outputs=[reports_list]
-)
+    )
+    submit_initial.click(
+    fn=process_patient_submission,
+    inputs=[problem_type, appointment_voice_input, appointment_image_input],
+    outputs=[
+        prediction_output,
+        report_output,
+        pdf_output,
+        slot_dropdown,
+        doctor_id_state
+    ]
+    )
+    book_btn.click(
+    fn=confirm_booking,
+    inputs=[user_state, doctor_id_state, slot_dropdown],
+    outputs=booking_status
+    )
 
 demo.launch(
     server_name="127.0.0.1",

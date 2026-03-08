@@ -45,3 +45,14 @@ Thumbs.db
 # --------------------
 node_modules/
 who_index/
+app.db
+
+.env
+
+storage/
+doctor_voice.mp3
+__pycache__/
+
+appointment/models/*.h5
+appointment/models/*.pt
+app.db
