@@ -255,6 +255,7 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
                 ["Kidney", "Brain", "Fracture", "Pneumonia", "General"],
                 label="Select Medical Problem"
             )
+            appointment_date_input = gr.Date(label="Select Appointment Date")
 
             appointment_voice_input = gr.Audio(
                 sources=["microphone", "upload"],
@@ -329,7 +330,7 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
     )
     submit_initial.click(
     fn=process_patient_submission,
-    inputs=[problem_type, appointment_voice_input, appointment_image_input],
+    inputs=[user_state,problem_type, appointment_voice_input, appointment_image_input],
     outputs=[
         prediction_output,
         report_output,

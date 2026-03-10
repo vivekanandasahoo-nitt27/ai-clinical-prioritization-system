@@ -11,7 +11,7 @@ import gradio as gr
 
 
 
-def process_patient_submission(problem_type, voice_path, image_path):
+def process_patient_submission(user_id,problem_type, voice_path, image_path):
 
     # Voice → text
     if voice_path:
@@ -52,6 +52,7 @@ def process_patient_submission(problem_type, voice_path, image_path):
 
     # Generate PDF report
     pdf_path = generate_appointment_report(
+        user_id=user_id,
         disease_type=problem_type,
         prediction=disease,
         confidence=confidence,

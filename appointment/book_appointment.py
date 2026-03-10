@@ -1,6 +1,7 @@
 from appointment.scheduler import book_slot
 from database import get_user_by_id, get_doctor_by_id
 from notifications.email_service import send_appointment_email
+from database import get_latest_report_by_user_id
 
 
 
@@ -31,7 +32,8 @@ def confirm_booking(user_id, doctor_id, slot):
         patient_email = patient.email
         doctor_email = doctor.email
 
-        report_path = "storage/appointment_report.pdf"  
+        report_path = get_latest_report_by_user_id(user_id)
+        print("DEBUG REPORT PATH:", report_path)  
 
         send_appointment_email(
             patient_email,

@@ -6,8 +6,8 @@ from sendgrid.helpers.mail import Mail
 load_dotenv()
 
 emails = [
-    "vivekanandasahoo34@gmail.com",
-    "vivekanandasahoo54@gmail.com"
+    "vivekanandasahoo34@gmail.com"
+    
 ]
 
 message = Mail(

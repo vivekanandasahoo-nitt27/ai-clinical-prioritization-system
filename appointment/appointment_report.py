@@ -3,8 +3,11 @@ from reportlab.pdfgen import canvas
 from datetime import datetime
 import os
 
+from database import SessionLocal, Report
+
 
 def generate_appointment_report(
+    user_id,
     disease_type,
     prediction,
     confidence,
@@ -22,27 +25,21 @@ def generate_appointment_report(
 
     width, height = letter
 
-    # Title
     c.setFont("Helvetica-Bold", 18)
     c.drawString(180, height - 50, "AI Medical Pre-Consultation Report")
 
     y = height - 100
-
     c.setFont("Helvetica", 12)
 
-    # Disease category
     c.drawString(50, y, f"Disease Category: {disease_type}")
     y -= 25
 
-    # Model prediction
     c.drawString(50, y, f"AI Prediction: {prediction}")
     y -= 25
 
-    # Confidence
     c.drawString(50, y, f"Model Confidence: {confidence:.2f}")
     y -= 40
 
-    # Patient voice description
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Patient Problem Description (Voice Transcription):")
     y -= 25
@@ -55,7 +52,6 @@ def generate_appointment_report(
 
     y -= 120
 
-    # Image section
     if image_path and os.path.exists(image_path):
 
         c.setFont("Helvetica-Bold", 14)
@@ -71,7 +67,6 @@ def generate_appointment_report(
             preserveAspectRatio=True
         )
 
-    # Footer
     c.setFont("Helvetica", 10)
     c.drawString(
         50,
@@ -80,5 +75,19 @@ def generate_appointment_report(
     )
 
     c.save()
+
+    # -------------------------
+    # SAVE REPORT TO DATABASE
+    # -------------------------
+    session = SessionLocal()
+
+    report = Report(
+        user_id=user_id,
+        file_path=file_path
+    )
+
+    session.add(report)
+    session.commit()
+    session.close()
 
     return file_path

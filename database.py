@@ -72,6 +72,23 @@ class Appointment(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
 
+def get_latest_report_by_user_id(user_id):
+
+    session = SessionLocal()
+
+    report = (
+        session.query(Report)
+        .filter(Report.user_id == user_id)
+        .order_by(Report.created_at.desc())
+        .first()
+    )
+
+    session.close()
+
+    if report:
+        return report.file_path
+
+    return None
 def get_user_by_id(user_id):
     session = SessionLocal()
     user = session.query(User).filter(User.id == user_id).first()
