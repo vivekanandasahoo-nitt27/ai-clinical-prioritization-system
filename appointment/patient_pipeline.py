@@ -11,7 +11,9 @@ import gradio as gr
 
 
 
-def process_patient_submission(user_id,problem_type, voice_path, image_path):
+def process_patient_submission(user_id, problem_type, appointment_date, voice_path, image_path):
+    if not appointment_date:
+        return "Please select an appointment date first.", "", None, [], None
 
     # Voice → text
     if voice_path:
@@ -42,7 +44,7 @@ def process_patient_submission(user_id,problem_type, voice_path, image_path):
     )
 
         # Load slots
-        appointment_date = "2026-03-10"
+        appointment_date = str(appointment_date)
         slots = get_available_slots(doctor_id, appointment_date)
 
     else:

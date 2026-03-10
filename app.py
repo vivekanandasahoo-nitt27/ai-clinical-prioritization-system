@@ -13,7 +13,7 @@ from agent_router import classify_intent
 from emergency_agent import build_emergency_response
 from appointment.patient_pipeline import process_patient_submission
 from appointment.book_appointment import confirm_booking
-
+from datetime import date
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -255,7 +255,10 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
                 ["Kidney", "Brain", "Fracture", "Pneumonia", "General"],
                 label="Select Medical Problem"
             )
-            appointment_date_input = gr.Date(label="Select Appointment Date")
+            appointment_date_input = gr.Textbox(
+            label="Select Appointment Date (YYYY-MM-DD)",
+            value=date.today().isoformat()
+            )
 
             appointment_voice_input = gr.Audio(
                 sources=["microphone", "upload"],
@@ -330,7 +333,7 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
     )
     submit_initial.click(
     fn=process_patient_submission,
-    inputs=[user_state,problem_type, appointment_voice_input, appointment_image_input],
+    inputs=[user_state, problem_type, appointment_date_input, appointment_voice_input, appointment_image_input],
     outputs=[
         prediction_output,
         report_output,
@@ -341,7 +344,7 @@ with gr.Blocks(title="AI Doctor with Vision, Voice, and Chat") as demo:
     )
     book_btn.click(
     fn=confirm_booking,
-    inputs=[user_state, doctor_id_state, slot_dropdown],
+    inputs=[user_state, doctor_id_state, appointment_date_input, slot_dropdown],
     outputs=booking_status
     )
 

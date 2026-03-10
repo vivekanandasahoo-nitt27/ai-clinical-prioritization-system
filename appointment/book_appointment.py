@@ -5,7 +5,9 @@ from database import get_latest_report_by_user_id
 
 
 
-def confirm_booking(user_id, doctor_id, slot):
+def confirm_booking(user_id, doctor_id, appointment_date, slot):
+    if not appointment_date:
+        return "Please select an appointment date."
 
     if not user_id:
         return "Please login before booking appointment."
@@ -20,7 +22,7 @@ def confirm_booking(user_id, doctor_id, slot):
         confidence=0.8,
         symptom_level="Moderate",
         duration="2 days",
-        date="2026-03-10",
+        date=str(appointment_date),
         time_slot=slot
     )
 
